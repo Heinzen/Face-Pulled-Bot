@@ -67,13 +67,12 @@ const playerAvailabilityHandler = async (embed, interaction) => {
     const interactionTime = interaction.customID.split("_")[1];
 
     ResponseDBUtils.addDataToArrayByKey(serverID, interactionDate, interactionTime, player);
-    // const table = ResponseDBUtils.test(ResponseDBUtils.config);
-    // console.log(table);
+    const table = ResponseDBUtils.postResponses(serverID, interactionDate);
 
-    // const content = `Face Pulled: Team Schedule **Monday (06/21)**:\n\`\`\`${table}\`\`\``;
-    // await interaction.message.edit({
-    //     content: content
-    // });
+    const content = `Face Pulled: Team Schedule **Monday (06/21)**:\n\`\`\`${table}\`\`\``;
+    await interaction.message.edit({
+        content: content
+    });
 }
 
 const configurationEmbedInteractionHandler = async (interactionString, embed, serverID, interaction) => {

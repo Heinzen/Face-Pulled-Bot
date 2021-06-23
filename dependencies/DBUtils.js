@@ -14,7 +14,6 @@ const buildBaseQuery = (serverID) => {
 const getIndexOfArrayElement = (serverID, query, data, database) => {
     const db = dbConnectionFactory(database);
     const fullQuery = buildBaseQuery(serverID) + query;
-    console.log(fullQuery);
     return db.getIndex(fullQuery, data, "key");
 }
 

@@ -4,14 +4,51 @@ const { JsonDB } = require('node-json-db');
 const dbUtils = require('./DBUtils')
 const appConfig = require ('../config.json');
 
-const getAvailableMembersByTime = (query) => {
+const config = {
+    drawHorizontalLine: (lineIndex, rowCount) => {
+        return lineIndex === 0 || lineIndex === 1 || lineIndex === 2 || lineIndex === rowCount;
+    },
+    header: {
+        alignment: 'center', 
+        content: 'FACE PULLED\nTeam schedule for Monday (06/21)'
+    }
+  }
 
+//I should go to jail for this function, this is literally a crime and I should not be allowed to do this
+const getScheduleByDay = (serverID, date) => {
+    const db = dbUtils.dbConnectionFactory(appConfig.response_db_filename);
+    const fullQuery = dbUtils.buildBaseQuery(serverID) + date;
+
+    let scheduleArray = [];
+    try {
+        scheduleArray = db.getData(fullQuery);
+    }
+    catch(e) {
+        console.error(e.stack.split("\n", 1).join(""));
+    }
+    
+    let sortable = Object.entries(scheduleArray)
+                    .sort(([a,],[b,]) => {
+                        let first = a.split("-")[0];
+                        let second = b.split("-")[0];
+                        return first - second;
+                    });
+
+    sortable.forEach((element, index) => {
+        for(let i = element[1].length; i < element[0].length; i++)
+            element[1].push('');
+    });
+
+    sortable = sortable[0].map((_, colIndex) => sortable.map(row => row[colIndex]));
+    const availabilityTable = sortable[1].map((_, colIndex) => sortable[1].map(row => row[colIndex]));
+    const times = sortable[0];
+
+    return [times, ...availabilityTable];
 }
 
 const addDataToArrayByKey = (serverID, date, time, player) => {
     const db = dbUtils.dbConnectionFactory(appConfig.response_db_filename);
     const fullQuery = dbUtils.buildBaseQuery(serverID) + date + "/" + time;
-    let index = -1;
 
     let data = [];
     try {
@@ -31,64 +68,15 @@ const addDataToArrayByKey = (serverID, date, time, player) => {
         data.push(player);
     }
     db.push(fullQuery, data, true);
-
-    // const data = {}
-    // data[time] = [player];
-
-    // try{ 
-    //     db.push(fullQuery, data, true);
-    // } catch(e) {
-    //     console.log(e);
-    // }
-
-    // const ret = db.getData("/arraytest/myarray[0]");
-    // console.log(ret.key[0]);
-    // try {
-    //     index = dbUtils.getIndexOfArrayElement(serverID, key, player, appConfig.response_db_filename);
-    // }
-    // catch (e) {
-    //     console.error("Database was empty.");
-    // }
-    //     //If the element has not been initialized yet, include it in the database
-    //     if(index === -1) {
-    //         const data = {
-    //             "key": player,
-    //             "toggle": true
-    //         }  
-        
-    //         console.log(`Running configuration query ${fullQuery}[${index}] | key: ${data.key}`);
-    //         db.push(fullQuery+"[]", data, true);
-    //     }
-    //     //Otherwise, flip the toggle
-    //     else {
-    //         const data = db.getData(`${fullQuery}[${index}]`);
-    //         const newData = flipObjectToggle(data);
-    //         db.push(`${fullQuery}[${index}]`, newData, true);
-    //     }
 }
 
-const config = {
-    drawHorizontalLine: (lineIndex, rowCount) => {
-        return lineIndex === 0 || lineIndex === 1 || lineIndex === 2 || lineIndex === rowCount;
-    },
-    header: {
-        alignment: 'center', 
-        content: 'FACE PULLED\nTeam schedule for Monday (06/21)'
-    }
-  }
+const postResponses = (serverID, date) => {
+    const input = getScheduleByDay(serverID, date);
+    const out = table(input,config);
 
-const test = (config) => {
-    const data = [
-        ['07:00 to 08:00 PM', '08:00 to 09:00 PM', '09:00 to 10:00 PM', '10:00 to 11:00 PM', '11:00 to 12:00 AM'],
-        ['Name1', 'Name1', 'Name1', 'Name1', 'Name1'],
-        ['Name2', 'Name2', 'Name2', 'Name2', 'Name2'],
-        ['Name3', 'Name3', 'Name3', 'Name3', 'Name3'],
-        ['Name4', 'Name4', 'Name4', 'Name4', 'Name4']
-    ];
-    
-    return(table(data, config));
+    console.log(out);
 }
 
 exports.config = config;
-exports.test = test;
 exports.addDataToArrayByKey = addDataToArrayByKey;
+exports.postResponses = postResponses;

@@ -1,0 +1,20 @@
+module.exports = Object.freeze({
+    SETUP_DESCRIPTION: "Click the buttons below to set up what days of the week and times the automated message should contain. Hours are EST.",
+    SETUP_TITLE: "Face Pulled scheduling configuration",
+    SETUP_FOOTER: "Issues? @Heinzen",
+    SETUP_MONDAY: "Monday",
+    SETUP_TUESDAY: "Tuesday",
+    SETUP_WEDNESDAY: "Wednesday",
+    SETUP_THURSDAY: "Thursday",
+    SETUP_FRIDAY: "Friday",
+    SETUP_SATURDAY: "Saturday",
+    SETUP_SUNDAY: "Sunday",
+    SETUP_PLAYER_DESCRIPTION: "Use the buttons below to fill in your availability for **Monday (06/21)**. Hours are EST and your name should be added or removed as you interact with this message.",
+    SETUP_PLAYER_TITLE: "Face Pulled: Team Schedule",
+    EMPTY_STRING: "\u200B",
+    BUTTON_PRIMARY: "PRIMARY",
+    BUTTON_SECONDARY: "SECONDARY",
+    BUTTON_SUCCESS: "SUCCESS",
+    BUTTON_DANGER: "DANGER",
+    BUTTON_LINK: "LINK"
+});
